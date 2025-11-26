@@ -31,7 +31,7 @@ class VoiceAssistant {
         this.conversationHistory = [
             {
                 role: "system",
-                content: "你的名字是小瞳同学，你是一个智能驾驶地空联合视觉感知系统小助手，可以对用户的问题进行回答，每句话控制在1-3句话。"
+                content: "你的名字是同学，你是一个智能低碳小程序知识辅助系统小助手，可以对用户的问题进行回答，每句话控制在1-3句话。"
             }
         ];
         this.isProcessing = false;
@@ -380,7 +380,7 @@ class VoiceAssistant {
                 this.setupVoiceControls();
                 this.checkAPIStatus();
                 
-                this.showMessage("欢迎使用小瞳同学智能语音助手！请点击麦克风按钮开始对话", 'assistant');
+                this.showMessage("欢迎使用低碳精灵智能语音助手！请点击麦克风按钮开始对话", 'assistant');
             }
      // 4.设置画布 - 配置用于绘制波形或其他图形的画布元素
             setupCanvas() {
@@ -477,7 +477,7 @@ init() {
         }
     }
     
-    this.showMessage("欢迎使用小瞳同学智能语音助手！请点击麦克风按钮开始对话", 'assistant');
+    this.showMessage("欢迎使用低碳精灵智能语音助手！请点击麦克风按钮开始对话", 'assistant');
 }
 
 // 7.在语音识别开始时清除重启计时器
@@ -949,7 +949,7 @@ stopListeningDueToInactivity() {
                     this.conversationHistory = [
                         {
                             role: "system",
-                            content: "你的名字是小瞳同学，你是一个智能驾驶地空联合视觉感知系统小助手，可以对用户的问题进行回答，每句话控制在1-3句话。"
+                            content: "你的名字是低碳精灵，你是一个智能驾驶地空联合视觉感知系统小助手，可以对用户的问题进行回答，每句话控制在1-3句话。"
                         }
                     ];
                     return '对话已重置，我们可以重新开始对话';
@@ -990,7 +990,7 @@ stopListeningDueToInactivity() {
                 thinkingContainer.id = 'thinkingIndicator';
                 thinkingContainer.className = 'message assistant-message';
                 thinkingContainer.innerHTML = `
-                    <div class="message-header">🤖 小瞳同学</div>
+                    <div class="message-header">🤖 低碳精灵</div>
                     <div class="thinking-indicator">
                         <span>.</span>
                         <span>.</span>
@@ -1044,7 +1044,7 @@ stopListeningDueToInactivity() {
                 const messageDiv = document.createElement('div');
                 messageDiv.className = `message ${type === 'assistant' ? 'assistant-message' : type === 'error' ? 'error-message' : 'user-message'}`;
                 messageDiv.innerHTML = `
-                    <div class="message-header">${type === 'assistant' ? '🤖 小瞳同学' : type === 'error' ? '❌ 错误' : '👤 您'}</div>
+                    <div class="message-header">${type === 'assistant' ? '🤖 低碳精灵' : type === 'error' ? '❌ 错误' : '👤 您'}</div>
                     <div class="message-content">${text}</div>
                 `;
                 transcriptDiv.appendChild(messageDiv);
@@ -1090,7 +1090,7 @@ stopListeningDueToInactivity() {
             async checkAPIStatus() {
                 try {
                     await this.callDeepSeekAPI("回复'连接成功'", true);
-                    this.showMessage("小瞳同学已就绪，可以开始对话", 'assistant');
+                    this.showMessage("低碳精灵已就绪，可以开始对话", 'assistant');
                 } catch (error) {
                     console.error('API连接测试失败:', error);
                     this.showMessage("API连接失败，使用基础功能模式", 'error');
@@ -1182,5 +1182,5 @@ stopListeningDueToInactivity() {
                 }
             }, 1000);
             
-            console.log("小瞳同学语音助手初始化完成");
+            console.log("低碳精灵语音助手初始化完成");
         });
