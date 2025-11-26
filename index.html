@@ -2,44 +2,71 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智能交通</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>语音助手</title>
     <link rel="stylesheet" href="./try.css">
-    <script src="./try.js"  defer></script>
+    <script src="./try.js" defer></script>
     <style>
-
+        /* 小程序环境优化 */
+        body {
+            margin: 0;
+            padding: 0;
+            background: transparent !important;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        
+        /* 隐藏不需要的元素 */
+        #contentFrame,
+        .voice-icon-container {
+            display: none !important;
+        }
+        
+        /* 强制显示助手窗口 */
+        .assistant-container {
+            display: block !important;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 100% !important;
+            max-height: 100% !important;
+            margin: 0 !important;
+            padding: 15px !important;
+            box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.98) !important;
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            z-index: 10000;
+            overflow: hidden;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 400px) {
+            .assistant-container {
+                padding: 10px !important;
+                border-radius: 10px;
+            }
+        }
     </style>
-
 </head>
 
 <body>
-    <iframe id="contentFrame" src="./index.html"></iframe>
-     <!-- 替换为第一个文件中的AI助手样式 -->
-     <div class="voice-icon-container" id="voiceAssistant">
-        <div class="voice-icon-glow"></div>
-        <img src="./img/tubiao3.gif" alt="语音助手" class="voice-icon" id="voiceIcon">
-        <div class="expanding-circle expanding-circle-1"></div>
-        <div class="expanding-circle expanding-circle-2"></div>
-        <div class="expanding-circle expanding-circle-3"></div>
-        <div class="expanding-circle expanding-circle-4"></div>
-        <div class="expanding-circle expanding-circle-5"></div>
-        <div class="outer-glow outer-glow-1"></div>
-        <div class="outer-glow outer-glow-2"></div>
-        <div class="outer-glow outer-glow-3"></div>
-        <div class="outer-glow outer-glow-4"></div>
-        <div class="icon-status-indicator"></div>
-    </div>
-       <!-- 修改助手容器，添加初始隐藏样式 -->
-       <div class="assistant-container" id="assistantContainer" style="display: none;">
-
+    <!-- 只保留助手窗口 -->
+    <div class="assistant-container" id="assistantContainer">
         <div class="assistant-header">
             <div class="assistant-title">小瞳同学智能语音助手</div>
             <div class="assistant-controls">
-                <button class="control-btn minimize-btn">−</button>
-                <button class="control-btn close-btn">×</button>
+                <button class="control-btn minimize-btn" onclick="minimizeWindow()">−</button>
+                <button class="control-btn close-btn" onclick="closeWindow()">×</button>
             </div>
         </div>
+        
         <div class="api-status" id="apiStatus">
             <span class="connected"></span>
             <span>API已连接</span>
@@ -60,7 +87,7 @@
                     <span>小瞳同学</span>
                 </div>
                 <div class="message-content">
-                    正在初始化，请稍候...
+                    语音助手已就绪，请点击麦克风开始对话
                 </div>
             </div>
         </div>
@@ -77,7 +104,7 @@
             </div>
             
             <div class="control-group">
-                <label>语速 (Rate):</label>
+                <label>语速:</label>
                 <input type="range" id="rateControl" min="0.5" max="2" step="0.1" value="1">
             </div>
             
@@ -87,13 +114,44 @@
             </div>
         </div>
     </div>
-</div>
-    </div>
- <!-- 背景音乐 -->
-<audio id="backgroundMusic" loop autoplay>
-    <source src="../music/gaoshanliushui.mp3" type="audio/mpeg">
 
-</audio>
+    <!-- 背景音乐 -->
+    <audio id="backgroundMusic">
+        <source src="../music/gaoshanliushui.mp3" type="audio/mpeg">
+    </audio>
 
+    <script>
+        // 小程序环境适配
+        function minimizeWindow() {
+            if (typeof wx !== 'undefined' && wx.miniProgram) {
+                wx.miniProgram.postMessage({ 
+                    data: { type: 'minimize' }
+                });
+            }
+        }
+        
+        function closeWindow() {
+            if (typeof wx !== 'undefined' && wx.miniProgram) {
+                wx.miniProgram.postMessage({ 
+                    data: { type: 'close' }
+                });
+            }
+        }
+        
+        // 页面加载完成后调整布局
+        window.addEventListener('load', function() {
+            adjustLayoutForMiniProgram();
+        });
+        
+        function adjustLayoutForMiniProgram() {
+            const container = document.getElementById('assistantContainer');
+            if (container) {
+                // 确保容器完全显示
+                container.style.display = 'block';
+                container.style.visibility = 'visible';
+                container.style.opacity = '1';
+            }
+        }
+    </script>
 </body>
-</html>小瞳
+</html>
