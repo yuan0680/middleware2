@@ -3,6 +3,18 @@ class VoiceAssistant {
     // 1.构造函数 - 初始化语音助手实例，接收API密钥作为参数
 
     constructor(apiKey) {
+      //小程序新增
+       // 检测是否在小程序环境中运行
+       this.isMiniProgram = this.detectMiniProgram();
+        
+       if (this.isMiniProgram) {
+           this.adaptForMiniProgram();
+       }
+      this.isMiniMode = this.detectMiniMode();
+        
+      if (this.isMiniMode) {
+          this.applyMiniModeStyles();
+      };
         this.setupFloatingControls = this.setupFloatingControls.bind(this);
         this.recognition = null;
         this.isListening = false;
@@ -40,7 +52,131 @@ class VoiceAssistant {
             this.initSpeechRecognition();
         }, 1000);
     }
+    // 检测小程序环境
+    detectMiniProgram() {
+      return (typeof wx !== 'undefined' && wx.miniProgram) || 
+             /miniProgram/.test(navigator.userAgent) ||
+             window.__wxjs_environment === 'miniprogram';
+  }
 
+  // 适配小程序环境
+  adaptForMiniProgram() {
+      console.log('检测到小程序环境，进行适配优化');
+      
+      // 隐藏不需要的元素
+      this.hideUnnecessaryElements();
+      
+      // 调整布局
+      this.adjustLayout();
+      
+      // 添加小程序通信
+      this.setupMiniProgramCommunication();
+      
+      // 自动显示助手窗口
+      this.showAssistantWindow();
+  }
+
+  hideUnnecessaryElements() {
+      // 隐藏语音图标，因为小程序已经有自己的入口
+      const voiceIcon = document.querySelector('.voice-icon-container');
+      if (voiceIcon) {
+          voiceIcon.style.display = 'none';
+      }
+      
+      // 隐藏背景音乐控制（小程序可能有自己的音频管理）
+      const musicControl = document.getElementById('backgroundMusicControl');
+      if (musicControl) {
+          musicControl.closest('.control-group').style.display = 'none';
+      }
+  }
+
+  adjustLayout() {
+      // 确保助手窗口完全显示
+      const container = document.getElementById('assistantContainer');
+      if (container) {
+          container.style.display = 'block';
+          container.style.visibility = 'visible';
+          container.style.opacity = '1';
+          container.style.width = '100%';
+          container.style.height = '100%';
+      }
+      
+      // 调整画布大小
+      this.setupCanvas();
+  }
+
+  setupMiniProgramCommunication() {
+      // 监听来自小程序的消息
+      if (typeof wx !== 'undefined' && wx.miniProgram) {
+          wx.miniProgram.onMessage((message) => {
+              this.handleMiniProgramMessage(message);
+          });
+      }
+  }
+
+  handleMiniProgramMessage(message) {
+      const { type, data } = message;
+      
+      switch (type) {
+          case 'startListening':
+              this.startListening();
+              break;
+          case 'stopListening':
+              this.stopListening();
+              break;
+          case 'close':
+              this.closeWindow();
+              break;
+      }
+  }
+
+  showAssistantWindow() {
+      // 在小程序环境中自动显示窗口
+      const container = document.getElementById('assistantContainer');
+      if (container) {
+          container.style.display = 'block';
+          // 触发重新布局
+          setTimeout(() => {
+              this.setupCanvas();
+          }, 100);
+      }
+  }
+
+  closeWindow() {
+      // 通知小程序关闭窗口
+      if (typeof wx !== 'undefined' && wx.miniProgram) {
+          wx.miniProgram.postMessage({
+              data: { type: 'windowClosed' }
+          });
+      }
+  }
+
+  // 重写 setupCanvas 方法确保在小程序中正常工作
+  setupCanvas() {
+      if (this.canvas && this.ctx) {
+          // 在小程序中使用固定尺寸
+          this.canvas.width = this.canvas.offsetWidth || 300;
+          this.canvas.height = this.canvas.offsetHeight || 10;
+          this.ctx.fillStyle = '#f8f9fa';
+          this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      }
+  }
+    detectMiniMode() {
+      // 通过URL参数检测
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.has('mini') || window.parent !== window;
+  }
+
+  applyMiniModeStyles() {
+      // 应用轻量模式样式
+      document.body.style.background = 'transparent';
+      
+      const container = document.querySelector('.assistant-container');
+      if (container) {
+          container.style.background = 'rgba(255, 255, 255, 0.95)';
+          container.style.backdropFilter = 'blur(20px)';
+      }
+  }
 
     // 2.初始化语音识别 - 设置语音识别功能
     initSpeechRecognition() {
